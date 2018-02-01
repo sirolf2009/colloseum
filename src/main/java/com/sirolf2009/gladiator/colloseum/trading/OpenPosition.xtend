@@ -21,7 +21,7 @@ import org.eclipse.xtend.lib.annotations.ToString
 		exit = Optional.empty()
 	}
 	
-	def getProfit(ITrade currentPrice) {
+	def getProfit(double currentPrice) {
 		var double exitPrices
 		var double weights
 		exitPrices += exit.map[
@@ -30,7 +30,7 @@ import org.eclipse.xtend.lib.annotations.ToString
 		weights += exit.map[
 			allTrades.map[amount.doubleValue()].reduce[a,b|a+b]
 		].orElse(0d)
-		exitPrices += currentPrice.price.doubleValue() * (entry.amount.doubleValue() - exit.map[amount].orElse(0d))
+		exitPrices += currentPrice * (entry.amount.doubleValue() - exit.map[amount].orElse(0d))
 		weights += entry.amount.doubleValue() - exit.map[amount].orElse(0d)
 		val exitPrice = exitPrices/weights
 		if(isLong()) {
