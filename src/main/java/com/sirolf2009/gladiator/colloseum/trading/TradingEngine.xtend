@@ -42,19 +42,19 @@ class TradingEngine {
 	}
 
 	def onNewAsk(Date date, ILimitOrder ask) {
-		val hitAskOrders = askOrders.filter [
-			ask.price.doubleValue() > price.doubleValue()
-		].sortWith[a, b|a.price.doubleValue.compareTo(b.price.doubleValue)]
-		hitAskOrders.forEach[hitOrder(date, it)]
-		askOrders.removeAll(hitAskOrders)
-	}
-
-	def onNewBid(Date date, ILimitOrder bid) {
 		val hitBidOrders = bidOrders.filter [
-			bid.price.doubleValue() < price.doubleValue()
+			ask.price.doubleValue() < price.doubleValue()
 		].sortWith[a, b|a.price.doubleValue.compareTo(b.price.doubleValue)].reverse
 		hitBidOrders.forEach[hitOrder(date, it)]
 		bidOrders.removeAll(hitBidOrders)
+	}
+
+	def onNewBid(Date date, ILimitOrder bid) {
+		val hitAskOrders = askOrders.filter [
+			bid.price.doubleValue() > price.doubleValue()
+		].sortWith[a, b|a.price.doubleValue.compareTo(b.price.doubleValue)]
+		hitAskOrders.forEach[hitOrder(date, it)]
+		askOrders.removeAll(hitAskOrders)
 	}
 
 	def hitOrder(Date date, ILimitOrder order) {

@@ -4,7 +4,7 @@
 	<groupId>com.sirolf2009.gladiator</groupId>
 	<artifactId>colloseum</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>xtend-quickstart</name>
+	<name>Gladiator - Colloseum</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<xtend.version>2.13.0</xtend.version>
