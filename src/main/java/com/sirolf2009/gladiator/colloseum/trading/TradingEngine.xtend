@@ -1,10 +1,13 @@
 package com.sirolf2009.gladiator.colloseum.trading
 
 import com.sirolf2009.commonwealth.timeseries.Point
+import com.sirolf2009.commonwealth.trading.IPosition
 import com.sirolf2009.commonwealth.trading.ITrade
 import com.sirolf2009.commonwealth.trading.Trade
 import com.sirolf2009.commonwealth.trading.orderbook.ILimitOrder
 import com.sirolf2009.commonwealth.trading.orderbook.LimitOrder
+import com.sirolf2009.gladiator.colloseum.position.IOpenPosition
+import com.sirolf2009.gladiator.colloseum.position.IOpenPositionFactory
 import com.sirolf2009.gladiator.colloseum.trading.event.EventOrderHit
 import com.sirolf2009.gladiator.colloseum.trading.event.EventPositionClosed
 import com.sirolf2009.gladiator.colloseum.trading.event.EventPositionOpened
@@ -20,14 +23,16 @@ import java.util.Optional
 class TradingEngine {
 
 	val IFeeCalculator feeCalculator
-	val closedPositions = new ArrayList<ClosedPosition>()
+	val IOpenPositionFactory positionFactory
+	val closedPositions = new ArrayList<IPosition>()
 	val askOrders = new ArrayList<ILimitOrder>()
 	val bidOrders = new ArrayList<ILimitOrder>()
-	var Optional<OpenPosition> position = Optional.empty()
+	var Optional<IOpenPosition> position = Optional.empty()
 	var List<IEvent> events
 
-	new(IFeeCalculator feeCalculator) {
+	new(IFeeCalculator feeCalculator, IOpenPositionFactory positionFactory) {
 		this.feeCalculator = feeCalculator
+		this.positionFactory = positionFactory
 	}
 
 	def onNewPrice(ITrade trade) {
@@ -72,13 +77,13 @@ class TradingEngine {
 	}
 
 	def openPosition(ITrade entry) {
-		position = Optional.of(new OpenPosition(entry, feeCalculator.getFee(entry, false)))
+		position = Optional.of(positionFactory.getPosition(entry, feeCalculator.getFee(entry, false)))
 		events.add(new EventPositionOpened(position.get()))
 	}
 
 	def closePosition(ILimitOrder order) {
 		val it = position.get()
-		closedPositions.add(new ClosedPosition(positionType, entry, entryFee, exit.get(), exitFee))
+		closedPositions.add(close())
 		position = Optional.empty()
 		events.add(new EventPositionClosed(closedPositions.last))
 	}
@@ -89,6 +94,10 @@ class TradingEngine {
 
 	def placeBidOrder(ILimitOrder order) {
 		bidOrders.add(order)
+	}
+	
+	def getPosition() {
+		return position
 	}
 
 	def getClosedPositions() {
