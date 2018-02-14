@@ -44,7 +44,7 @@ import org.eclipse.xtend.lib.annotations.Accessors
 	}
 
 	override getPrice() {
-		openTrades.stream.mapToDouble[price.doubleValue].average().orElseThrow[new IllegalStateException("No open trades left")]
+		openTrades.stream.mapToDouble[price.doubleValue].sum / openTrades.size()
 	}
 
 	override getSize() {

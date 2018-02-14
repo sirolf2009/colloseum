@@ -29,7 +29,7 @@ import org.eclipse.xtend.lib.annotations.Accessors
 	}
 	
 	override getPrice() {
-		return allTrades.stream.mapToDouble[price.doubleValue].average.orElse(0)
+		return allTrades.stream.mapToDouble[price.doubleValue].sum() / allTrades.size()
 	}
 
 	override getPoint() {
