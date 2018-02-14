@@ -1,8 +1,8 @@
 package com.sirolf2009.gladiator.colloseum.position
 
 import com.sirolf2009.commonwealth.trading.ITrade
-import com.sirolf2009.commonwealth.trading.Position
 import com.sirolf2009.commonwealth.trading.PositionType
+import com.sirolf2009.gladiator.colloseum.trading.ClosedPosition
 import com.sirolf2009.gladiator.colloseum.trading.TradeSummary
 import java.util.LinkedList
 import java.util.Optional
@@ -16,6 +16,7 @@ import org.eclipse.xtend.lib.annotations.Accessors
 	val Queue<ITrade> openTrades
 	val TradeSummary openingTrades
 	val PositionType positionType
+	@Accessors var double maxDrawdown
 	var Optional<TradeSummary> closingTrades
 	var double fees
 
@@ -59,7 +60,7 @@ import org.eclipse.xtend.lib.annotations.Accessors
 	}
 
 	override close() {
-		return new Position(openingTrades as ITrade, closingTrades.get() as ITrade, fees/2, fees/2, positionType)
+		return new ClosedPosition(positionType, openingTrades as ITrade, fees/2, closingTrades.get() as ITrade, fees/2, maxDrawdown)
 	}
 
 }

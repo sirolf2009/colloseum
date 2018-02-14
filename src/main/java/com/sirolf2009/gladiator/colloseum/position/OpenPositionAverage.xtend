@@ -2,11 +2,11 @@ package com.sirolf2009.gladiator.colloseum.position
 
 import com.sirolf2009.commonwealth.trading.ITrade
 import com.sirolf2009.commonwealth.trading.PositionType
+import com.sirolf2009.gladiator.colloseum.trading.ClosedPosition
 import com.sirolf2009.gladiator.colloseum.trading.TradeSummary
 import java.util.Optional
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.eclipse.xtend.lib.annotations.ToString
-import com.sirolf2009.commonwealth.trading.Position
 
 @Accessors(PUBLIC_GETTER) @ToString class OpenPositionAverage implements IOpenPosition {
 	
@@ -14,6 +14,7 @@ import com.sirolf2009.commonwealth.trading.Position
 	
 	val TradeSummary entry
 	val PositionType positionType
+	@Accessors var double maxDrawdown
 	var double fees
 	var Optional<TradeSummary> exit
 	
@@ -76,7 +77,7 @@ import com.sirolf2009.commonwealth.trading.Position
 	}
 	
 	override close() {
-		return new Position(entry as ITrade, exit.get() as ITrade, fees/2, fees/2, positionType)
+		return new ClosedPosition(positionType, entry as ITrade, fees/2, exit.get() as ITrade, fees/2, maxDrawdown)
 	}
 	
 }

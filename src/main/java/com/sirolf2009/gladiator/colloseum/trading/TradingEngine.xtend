@@ -44,6 +44,7 @@ class TradingEngine {
 		events = new ArrayList()
 		onNewAsk(date, ask)
 		onNewBid(date, bid)
+		position.ifPresent[updateDrawdown(bid.price.doubleValue(), ask.price.doubleValue())]
 		return events
 	}
 
