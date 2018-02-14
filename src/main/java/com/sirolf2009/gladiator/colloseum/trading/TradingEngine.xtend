@@ -19,6 +19,7 @@ import java.util.Collections
 import java.util.Date
 import java.util.List
 import java.util.Optional
+import com.sirolf2009.commonwealth.trading.backtest.BacktestResult
 
 class TradingEngine {
 
@@ -94,6 +95,10 @@ class TradingEngine {
 
 	def placeBidOrder(ILimitOrder order) {
 		bidOrders.add(order)
+	}
+	
+	def summarize() {
+		return new BacktestResult(closedPositions)
 	}
 	
 	def getPosition() {
