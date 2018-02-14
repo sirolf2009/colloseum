@@ -1,7 +1,6 @@
 package com.sirolf2009.gladiator.colloseum.trading
 
 import com.sirolf2009.commonwealth.timeseries.Point
-import com.sirolf2009.commonwealth.trading.IPosition
 import com.sirolf2009.commonwealth.trading.ITrade
 import com.sirolf2009.commonwealth.trading.Trade
 import com.sirolf2009.commonwealth.trading.orderbook.ILimitOrder
@@ -19,13 +18,12 @@ import java.util.Collections
 import java.util.Date
 import java.util.List
 import java.util.Optional
-import com.sirolf2009.commonwealth.trading.backtest.BacktestResult
 
 class TradingEngine {
 
 	val IFeeCalculator feeCalculator
 	val IOpenPositionFactory positionFactory
-	val closedPositions = new ArrayList<IPosition>()
+	val closedPositions = new ArrayList<ClosedPosition>()
 	val askOrders = new ArrayList<ILimitOrder>()
 	val bidOrders = new ArrayList<ILimitOrder>()
 	var Optional<IOpenPosition> position = Optional.empty()
@@ -99,7 +97,7 @@ class TradingEngine {
 	}
 	
 	def summarize() {
-		return new BacktestResult(closedPositions)
+		return new ColloseumBacktestResult(closedPositions)
 	}
 	
 	def getPosition() {
