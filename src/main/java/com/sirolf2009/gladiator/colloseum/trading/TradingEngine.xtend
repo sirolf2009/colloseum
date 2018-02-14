@@ -46,7 +46,7 @@ class TradingEngine {
 		return events
 	}
 
-	def onNewAsk(Date date, ILimitOrder ask) {
+	def private onNewAsk(Date date, ILimitOrder ask) {
 		val hitBidOrders = bidOrders.filter [
 			ask.price.doubleValue() < price.doubleValue()
 		].sortWith[a, b|a.price.doubleValue.compareTo(b.price.doubleValue)].reverse
@@ -54,7 +54,7 @@ class TradingEngine {
 		bidOrders.removeAll(hitBidOrders)
 	}
 
-	def onNewBid(Date date, ILimitOrder bid) {
+	def private onNewBid(Date date, ILimitOrder bid) {
 		val hitAskOrders = askOrders.filter [
 			bid.price.doubleValue() > price.doubleValue()
 		].sortWith[a, b|a.price.doubleValue.compareTo(b.price.doubleValue)]
@@ -62,7 +62,7 @@ class TradingEngine {
 		askOrders.removeAll(hitAskOrders)
 	}
 
-	def hitOrder(Date date, ILimitOrder order) {
+	def private hitOrder(Date date, ILimitOrder order) {
 		events.add(new EventOrderHit(order))
 		val myTrade = new Trade(new Point(date.time, order.price), order.amount)
 		if(position.present) {
@@ -76,12 +76,12 @@ class TradingEngine {
 		}
 	}
 
-	def openPosition(ITrade entry) {
+	def private openPosition(ITrade entry) {
 		position = Optional.of(positionFactory.getPosition(entry, feeCalculator.getFee(entry, false)))
 		events.add(new EventPositionOpened(position.get()))
 	}
 
-	def closePosition(ILimitOrder order) {
+	def private closePosition(ILimitOrder order) {
 		val it = position.get()
 		closedPositions.add(close())
 		position = Optional.empty()

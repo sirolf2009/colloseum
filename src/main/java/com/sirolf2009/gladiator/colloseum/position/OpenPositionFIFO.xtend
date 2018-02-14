@@ -16,7 +16,7 @@ import org.eclipse.xtend.lib.annotations.Accessors
 	val Queue<ITrade> openTrades
 	val TradeSummary openingTrades
 	val PositionType positionType
-	@Accessors var double maxDrawdown
+	var double maxDrawdown
 	var Optional<TradeSummary> closingTrades
 	var double fees
 
@@ -26,6 +26,10 @@ import org.eclipse.xtend.lib.annotations.Accessors
 		this.closingTrades = Optional.empty()
 		positionType = if(entry.bought) PositionType.LONG else PositionType.SHORT
 		fees += fee
+	}
+	
+	override toString() {
+		return '''«if(openingTrades.bought) "Bought" else "Sold"» «Math.abs(size)» at «price»'''
 	}
 
 	override add(ITrade trade, Number fee) {
