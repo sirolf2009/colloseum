@@ -13,12 +13,17 @@ import com.sirolf2009.gladiator.colloseum.trading.event.EventPositionOpened
 import com.sirolf2009.gladiator.colloseum.trading.event.EventPositionUpdate
 import com.sirolf2009.gladiator.colloseum.trading.event.IEvent
 import com.sirolf2009.gladiator.colloseum.trading.fee.IFeeCalculator
+import com.sirolf2009.util.jmx.JMXBean
 import java.util.ArrayList
 import java.util.Collections
 import java.util.Date
 import java.util.List
 import java.util.Optional
+import java.io.File
+import java.io.ObjectOutputStream
+import java.io.FileOutputStream
 
+@JMXBean
 class TradingEngine {
 
 	val IFeeCalculator feeCalculator
@@ -28,10 +33,14 @@ class TradingEngine {
 	val bidOrders = new ArrayList<ILimitOrder>()
 	var Optional<IOpenPosition> position = Optional.empty()
 	var List<IEvent> events
+	var Date currentDate
+	var double ask
+	var double bid
 
 	new(IFeeCalculator feeCalculator, IOpenPositionFactory positionFactory) {
 		this.feeCalculator = feeCalculator
 		this.positionFactory = positionFactory
+		registerAs("com.sirolf2009.gladiator.colloseum:type=TradingEngine")
 	}
 
 	def onNewPrice(ITrade trade) {
@@ -39,6 +48,9 @@ class TradingEngine {
 	}
 
 	def onNewBidAsk(Date date, ILimitOrder bid, ILimitOrder ask) {
+		this.currentDate = date
+		this.ask = ask.price.doubleValue
+		this.bid = bid.price.doubleValue
 		events = new ArrayList()
 		onNewAsk(date, ask)
 		onNewBid(date, bid)
@@ -100,6 +112,12 @@ class TradingEngine {
 		return new ColloseumBacktestResult(closedPositions)
 	}
 	
+	def savePositionsTo(File file) {
+		val out = new ObjectOutputStream(new FileOutputStream(file))
+		out.writeObject(closedPositions)
+		out.close()
+	}
+	
 	def getPosition() {
 		return position
 	}
@@ -114,6 +132,48 @@ class TradingEngine {
 
 	def getBidOrders() {
 		return Collections.unmodifiableList(bidOrders)
+	}
+	
+	// JMX methods
+	
+	override Date getCurrentTime() {
+		return currentDate
+	}
+	
+	override double getBid() {
+		return bid
+	}
+	
+	override double getAsk() {
+		return ask
+	}
+	
+	override double getAvgEntry() {
+		return position.map[price].orElse(0d)
+	}
+	
+	override boolean isLong() {
+		return position.map[isLong].orElse(false)
+	}
+	
+	override boolean isShort() {
+		return position.map[isShort].orElse(false)
+	}
+	
+	override double getSize() {
+		return position.map[size].orElse(null)
+	}
+	
+	override double getBiggestTrade() {
+		return summarize().sizes.getMax().orElse(0)
+	}
+	
+	override double getMaxDrawdown() {
+		return -summarize().drawdown.getMin().orElse(0)
+	}
+	
+	override double getProfits() {
+		return summarize().profits.sum()
 	}
 
 }
