@@ -98,7 +98,7 @@ class OpenPositionFIFOTest {
 		assertTrue(position.closed)
 		
 		val closed = position.close
-		assertEquals(1, Math.round(closed.profit))
+		assertEquals(-13, Math.round(closed.profit))
 		assertEquals(-3, closed.size.doubleValue)
 	}
 	
