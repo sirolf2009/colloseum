@@ -19,6 +19,8 @@ import org.eclipse.xtend.lib.annotations.Accessors
 	var double maxDrawdown
 	var Optional<TradeSummary> closingTrades
 	var double fees
+	var double price
+	var double size
 
 	new(ITrade entry, Number fee) {
 		this.openTrades = new LinkedList(#[entry])
@@ -26,6 +28,8 @@ import org.eclipse.xtend.lib.annotations.Accessors
 		this.closingTrades = Optional.empty()
 		positionType = if(entry.bought) PositionType.LONG else PositionType.SHORT
 		fees += fee
+		price = entry.price.doubleValue()
+		size = entry.amount.doubleValue()
 	}
 	
 	override toString() {
@@ -45,14 +49,8 @@ import org.eclipse.xtend.lib.annotations.Accessors
 				closingTrades = Optional.of(new TradeSummary(trade))
 			}
 		}
-	}
-
-	override getPrice() {
-		openTrades.stream.mapToDouble[price.doubleValue].sum / openTrades.size()
-	}
-
-	override getSize() {
-		openTrades.stream.mapToDouble[amount.doubleValue].sum()
+		price = openTrades.stream.mapToDouble[price.doubleValue].sum / openTrades.size()
+		size = openTrades.stream.mapToDouble[amount.doubleValue].sum()
 	}
 
 	override isClosed() {
