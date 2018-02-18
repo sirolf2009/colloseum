@@ -49,7 +49,7 @@ import org.eclipse.xtend.lib.annotations.Accessors
 				closingTrades = Optional.of(new TradeSummary(trade))
 			}
 		}
-		price = openTrades.stream.mapToDouble[price.doubleValue].sum / openTrades.size()
+		price = openTrades.stream.mapToDouble[it.price.doubleValue].sum / openTrades.size()
 		size = openTrades.stream.mapToDouble[amount.doubleValue].sum()
 	}
 
