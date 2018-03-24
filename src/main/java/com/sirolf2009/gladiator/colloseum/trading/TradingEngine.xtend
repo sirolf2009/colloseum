@@ -14,14 +14,14 @@ import com.sirolf2009.gladiator.colloseum.trading.event.EventPositionUpdate
 import com.sirolf2009.gladiator.colloseum.trading.event.IEvent
 import com.sirolf2009.gladiator.colloseum.trading.fee.IFeeCalculator
 import com.sirolf2009.util.jmx.JMXBean
+import java.io.File
+import java.io.FileOutputStream
+import java.io.ObjectOutputStream
 import java.util.ArrayList
 import java.util.Collections
 import java.util.Date
 import java.util.List
 import java.util.Optional
-import java.io.File
-import java.io.ObjectOutputStream
-import java.io.FileOutputStream
 
 @JMXBean
 class TradingEngine {
@@ -36,6 +36,7 @@ class TradingEngine {
 	var Date currentDate
 	var double ask
 	var double bid
+	var double drawdown
 
 	new(IFeeCalculator feeCalculator, IOpenPositionFactory positionFactory) {
 		this.feeCalculator = feeCalculator
@@ -47,14 +48,17 @@ class TradingEngine {
 		return onNewBidAsk(trade.point.date, new LimitOrder(trade.point.x, trade.price.doubleValue()), new LimitOrder(trade.point.x, trade.price.doubleValue()))
 	}
 
-	def onNewBidAsk(Date date, ILimitOrder bid, ILimitOrder ask) {
+	def synchronized onNewBidAsk(Date date, ILimitOrder bid, ILimitOrder ask) {
 		this.currentDate = date
 		this.ask = ask.price.doubleValue
 		this.bid = bid.price.doubleValue
 		events = new ArrayList()
 		onNewAsk(date, ask)
 		onNewBid(date, bid)
-		position.ifPresent[updateDrawdown(bid.price.doubleValue(), ask.price.doubleValue())]
+		position.ifPresent[
+			updateDrawdown(bid.price.doubleValue(), ask.price.doubleValue())
+			drawdown = it.maxDrawdown
+		]
 		return events
 	}
 
@@ -100,11 +104,11 @@ class TradingEngine {
 		events.add(new EventPositionClosed(closedPositions.last))
 	}
 
-	def placeAskOrder(ILimitOrder order) {
+	def synchronized placeAskOrder(ILimitOrder order) {
 		askOrders.add(order)
 	}
 
-	def placeBidOrder(ILimitOrder order) {
+	def synchronized placeBidOrder(ILimitOrder order) {
 		bidOrders.add(order)
 	}
 	
@@ -149,7 +153,7 @@ class TradingEngine {
 	}
 	
 	override double getAvgEntry() {
-		return position.map[price].orElse(0d)
+		return position.map[price].orElse(null)
 	}
 	
 	override boolean isLong() {
@@ -174,6 +178,10 @@ class TradingEngine {
 	
 	override double getProfits() {
 		return summarize().profits.sum()
+	}
+	
+	override double getDrawdown() {
+		return -drawdown
 	}
 
 }
