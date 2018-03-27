@@ -36,6 +36,14 @@ interface IOpenPosition {
 		}
 	}
 
+	def double getProfit(double bid, double ask) {
+		if(isLong()) {
+			return getProfit(ask)
+		} else {
+			return getProfit(bid)
+		}
+	}
+
 	def double getProfit(double currentPrice) {
 		if(isLong()) {
 			return (currentPrice - getPrice()) * getSize() - getFees()

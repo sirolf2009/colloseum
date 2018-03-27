@@ -64,7 +64,7 @@ class TradingEngine {
 
 	def private onNewAsk(Date date, ILimitOrder ask) {
 		val hitBidOrders = bidOrders.filter [
-			ask.price.doubleValue() < price.doubleValue()
+			ask.price.doubleValue() <= price.doubleValue()
 		].sortWith[a, b|a.price.doubleValue.compareTo(b.price.doubleValue)].reverse
 		hitBidOrders.forEach[hitOrder(date, it)]
 		bidOrders.removeAll(hitBidOrders)
@@ -72,7 +72,7 @@ class TradingEngine {
 
 	def private onNewBid(Date date, ILimitOrder bid) {
 		val hitAskOrders = askOrders.filter [
-			bid.price.doubleValue() > price.doubleValue()
+			bid.price.doubleValue() >= price.doubleValue()
 		].sortWith[a, b|a.price.doubleValue.compareTo(b.price.doubleValue)]
 		hitAskOrders.forEach[hitOrder(date, it)]
 		askOrders.removeAll(hitAskOrders)
@@ -166,6 +166,10 @@ class TradingEngine {
 	
 	override double getSize() {
 		return position.map[size].orElse(null)
+	}
+	
+	override double getProfit() {
+		return position.map[getProfit(bid, ask)].orElse(null)
 	}
 	
 	override double getBiggestTrade() {
