@@ -4,7 +4,6 @@ import com.sirolf2009.commonwealth.timeseries.Point
 import com.sirolf2009.commonwealth.trading.IPosition
 import com.sirolf2009.commonwealth.trading.Trade
 import com.sirolf2009.commonwealth.trading.orderbook.LimitOrder
-import com.sirolf2009.gladiator.colloseum.position.IOpenPosition
 import com.sirolf2009.gladiator.colloseum.position.OpenPositionFIFO
 import com.sirolf2009.gladiator.colloseum.trading.event.EventOrderHit
 import com.sirolf2009.gladiator.colloseum.trading.event.EventPositionClosed
@@ -16,6 +15,7 @@ import java.util.List
 import org.junit.Test
 
 import static junit.framework.Assert.*
+import com.sirolf2009.gladiator.colloseum.position.IOpenColloseumPosition
 
 class TradingEngineTest {
 	
@@ -101,13 +101,13 @@ class TradingEngineTest {
 		return closedPositions.get(0).position
 	}
 	
-	def IOpenPosition getNewPosition(List<IEvent> events) {
+	def IOpenColloseumPosition getNewPosition(List<IEvent> events) {
 		val newPositions = events.filter[it instanceof EventPositionOpened].map[it as EventPositionOpened].toList()
 		assertEquals(1, newPositions.size())
 		return newPositions.get(0).position
 	}
 	
-	def IOpenPosition getPosition(List<IEvent> events) {
+	def IOpenColloseumPosition getPosition(List<IEvent> events) {
 		val positions = events.filter[it instanceof EventPositionUpdate].map[it as EventPositionUpdate].toList()
 		assertEquals(1, positions.size())
 		return positions.get(0).position

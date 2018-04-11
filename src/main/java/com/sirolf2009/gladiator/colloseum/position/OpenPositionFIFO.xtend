@@ -8,8 +8,9 @@ import java.util.LinkedList
 import java.util.Optional
 import java.util.Queue
 import org.eclipse.xtend.lib.annotations.Accessors
+import com.sirolf2009.commonwealth.trading.Trade
 
-@Accessors class OpenPositionFIFO implements IOpenPosition {
+@Accessors class OpenPositionFIFO implements IOpenColloseumPosition {
 
 	public static IOpenPositionFactory FACTORY = [trade, fee|new OpenPositionFIFO(trade, fee)]
 
@@ -35,6 +36,10 @@ import org.eclipse.xtend.lib.annotations.Accessors
 	override toString() {
 		return '''«if(openingTrades.bought) "Bought" else "Sold"» «Math.abs(size)» at «price»'''
 	}
+	
+	override getEntry() {
+		return new Trade(openingTrades.allTrades.get(0).point, getSize())
+	}
 
 	override add(ITrade trade, Number fee) {
 		fees += fee
@@ -51,6 +56,14 @@ import org.eclipse.xtend.lib.annotations.Accessors
 		}
 		price = openTrades.stream.mapToDouble[it.price.doubleValue].sum / openTrades.size()
 		size = openTrades.stream.mapToDouble[amount.doubleValue].sum()
+	}
+	
+	override getSize() {
+		return size
+	}
+	
+	override getEntryFee() {
+		return openTrades.map[fees].reduce[a,b|a+b]
 	}
 
 	override isClosed() {

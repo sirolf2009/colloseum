@@ -8,7 +8,7 @@ import java.util.Optional
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.eclipse.xtend.lib.annotations.ToString
 
-@Accessors(PUBLIC_GETTER) @ToString class OpenPositionAverage implements IOpenPosition {
+@Accessors(PUBLIC_GETTER) @ToString class OpenPositionAverage implements IOpenColloseumPosition {
 	
 	public static IOpenPositionFactory FACTORY = [trade,fee| new OpenPositionAverage(trade, fee)] 
 	
@@ -25,7 +25,7 @@ import org.eclipse.xtend.lib.annotations.ToString
 		exit = Optional.empty()
 	}
 	
-	override getProfit(double currentPrice) {
+	override getProfit(Number currentPrice) {
 		var double exitPrices
 		var double weights
 		exitPrices += exit.map[
@@ -34,7 +34,7 @@ import org.eclipse.xtend.lib.annotations.ToString
 		weights += exit.map[
 			allTrades.map[amount.doubleValue()].reduce[a,b|a+b]
 		].orElse(0d)
-		exitPrices += currentPrice * (entry.amount.doubleValue() - exit.map[amount].orElse(0d))
+		exitPrices += currentPrice.doubleValue * (entry.amount.doubleValue() - exit.map[amount].orElse(0d))
 		weights += entry.amount.doubleValue() - exit.map[amount].orElse(0d)
 		val exitPrice = exitPrices/weights
 		if(isLong()) {
@@ -44,8 +44,12 @@ import org.eclipse.xtend.lib.annotations.ToString
 		}
 	}
 	
-	override getPrice() {
-		return entry.price.doubleValue()
+	override getEntryPrice() {
+		return entry.price
+	}
+	
+	override getEntryFee() {
+		return fees
 	}
 	
 	override getSize() {

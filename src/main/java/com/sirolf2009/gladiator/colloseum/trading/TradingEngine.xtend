@@ -6,7 +6,6 @@ import com.sirolf2009.commonwealth.trading.Trade
 import com.sirolf2009.commonwealth.trading.orderbook.ILimitOrder
 import com.sirolf2009.commonwealth.trading.orderbook.LimitOrder
 import com.sirolf2009.gladiator.colloseum.data.IBidAsk
-import com.sirolf2009.gladiator.colloseum.position.IOpenPosition
 import com.sirolf2009.gladiator.colloseum.position.IOpenPositionFactory
 import com.sirolf2009.gladiator.colloseum.trading.event.EventOrderHit
 import com.sirolf2009.gladiator.colloseum.trading.event.EventPositionClosed
@@ -23,6 +22,7 @@ import java.util.Collections
 import java.util.Date
 import java.util.List
 import java.util.Optional
+import com.sirolf2009.gladiator.colloseum.position.IOpenColloseumPosition
 
 @JMXBean
 class TradingEngine {
@@ -32,7 +32,7 @@ class TradingEngine {
 	val closedPositions = new ArrayList<ClosedPosition>()
 	val askOrders = new ArrayList<ILimitOrder>()
 	val bidOrders = new ArrayList<ILimitOrder>()
-	var Optional<IOpenPosition> position = Optional.empty()
+	var Optional<IOpenColloseumPosition> position = Optional.empty()
 	var List<IEvent> events
 	var Date currentDate
 	var double ask
@@ -158,7 +158,7 @@ class TradingEngine {
 	}
 	
 	override double getAvgEntry() {
-		return position.map[price].orElse(null)
+		return position.map[entryPrice.doubleValue].orElse(null)
 	}
 	
 	override boolean isLong() {
@@ -170,7 +170,7 @@ class TradingEngine {
 	}
 	
 	override double getSize() {
-		return position.map[size].orElse(null)
+		return position.map[size.doubleValue].orElse(null)
 	}
 	
 	override double getProfit() {

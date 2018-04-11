@@ -4,6 +4,6 @@ import com.sirolf2009.commonwealth.trading.ITrade
 
 interface IOpenPositionFactory {
 	
-	def IOpenPosition getPosition(ITrade entry, Number fee)
+	def IOpenColloseumPosition getPosition(ITrade entry, Number fee)
 	
 }
