@@ -23,7 +23,6 @@ import java.util.Collections
 import java.util.Date
 import java.util.List
 import java.util.Optional
-import com.sirolf2009.gladiator.colloseum.data.IBidAsk
 
 @JMXBean
 class TradingEngine {
@@ -50,10 +49,6 @@ class TradingEngine {
 		return onNewBidAsk(trade.point.date, new LimitOrder(trade.point.x, trade.price.doubleValue()), new LimitOrder(trade.point.x, trade.price.doubleValue()))
 	}
 	
-	def synchronized onNewBidAsk(IBidAsk bidAsk) {
-		onNewBidAsk(bidAsk.timestamp, bidAsk.bid, bidAsk.ask)
-	}
-
 	def onNewBidAsk(IBidAsk bidAsk) {
 		onNewBidAsk(bidAsk.timestamp, bidAsk.bid, bidAsk.ask)
 	}
