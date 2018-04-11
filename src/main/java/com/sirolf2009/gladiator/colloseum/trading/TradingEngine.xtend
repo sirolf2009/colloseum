@@ -5,6 +5,7 @@ import com.sirolf2009.commonwealth.trading.ITrade
 import com.sirolf2009.commonwealth.trading.Trade
 import com.sirolf2009.commonwealth.trading.orderbook.ILimitOrder
 import com.sirolf2009.commonwealth.trading.orderbook.LimitOrder
+import com.sirolf2009.gladiator.colloseum.data.IBidAsk
 import com.sirolf2009.gladiator.colloseum.position.IOpenPosition
 import com.sirolf2009.gladiator.colloseum.position.IOpenPositionFactory
 import com.sirolf2009.gladiator.colloseum.trading.event.EventOrderHit
@@ -47,6 +48,10 @@ class TradingEngine {
 
 	def onNewPrice(ITrade trade) {
 		return onNewBidAsk(trade.point.date, new LimitOrder(trade.point.x, trade.price.doubleValue()), new LimitOrder(trade.point.x, trade.price.doubleValue()))
+	}
+	
+	def synchronized onNewBidAsk(IBidAsk bidAsk) {
+		onNewBidAsk(bidAsk.timestamp, bidAsk.bid, bidAsk.ask)
 	}
 
 	def onNewBidAsk(IBidAsk bidAsk) {
