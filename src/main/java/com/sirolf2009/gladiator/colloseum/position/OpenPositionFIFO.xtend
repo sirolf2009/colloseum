@@ -67,7 +67,7 @@ import com.sirolf2009.commonwealth.trading.Trade
 	}
 
 	override isClosed() {
-		return getSize() == 0
+		return getSize().doubleValue() == 0d
 	}
 
 	override getPositionType() {
