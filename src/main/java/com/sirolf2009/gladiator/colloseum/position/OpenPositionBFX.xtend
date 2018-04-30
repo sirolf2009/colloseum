@@ -38,17 +38,11 @@ import com.sirolf2009.commonwealth.timeseries.Point
 
 	override add(ITrade trade, Number fee) {
 //		fees += fee
+		val profit = getProfit(trade.price)
+		size += trade.amount
 		if(isLong == trade.bought) {
-			val profit = getProfit(trade.price)
-			size += trade.amount
-			val prevPrice = price
 			price = calculateEntry(positionType, size, profit, trade.price.doubleValue())
-			if(prevPrice < price) {
-				System.exit(0)
-			}
 		} else {
-			val profit = getProfit(trade.price)
-			size -= trade.amount
 			if(size != 0d) {
 				price = calculateEntry(positionType, size, profit, trade.price.doubleValue())
 			} else {
@@ -82,7 +76,7 @@ import com.sirolf2009.commonwealth.timeseries.Point
 	}
 
 	override close() {
-		return new ClosedPosition(positionType, new Trade(point, exit.amount), fees / 2, exit, fees / 2, maxDrawdown)
+		return new ClosedPosition(positionType, new Trade(new Point(point.x, price), -exit.amount.doubleValue()), fees / 2, exit, fees / 2, maxDrawdown)
 	}
 
 }
