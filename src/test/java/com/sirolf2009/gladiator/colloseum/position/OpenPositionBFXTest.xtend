@@ -29,7 +29,7 @@ class OpenPositionBFXTest {
 				add(new Trade(new Point(now(), 100-index), 100), 0)
 				assertTrue(getEntryPrice().doubleValue() < 100d)
 				assertEquals(profit, getProfit(100-index))
-			]			
+			]
 		]
 	}
 	
@@ -44,7 +44,7 @@ class OpenPositionBFXTest {
 				add(new Trade(new Point(now(), 100+index), 100), 0)
 				assertTrue(getEntryPrice().doubleValue() > 100d)
 				assertEquals(profit, getProfit(100+index))
-			]			
+			]
 		]
 	}
 	

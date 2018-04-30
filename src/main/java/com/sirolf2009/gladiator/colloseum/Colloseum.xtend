@@ -1,8 +1,8 @@
 package com.sirolf2009.gladiator.colloseum
 
-import com.sirolf2009.gladiator.colloseum.trading.TradingEngine
 import com.sirolf2009.gladiator.colloseum.data.IDataRetriever
 import com.sirolf2009.gladiator.colloseum.strategy.IStrategy
+import com.sirolf2009.gladiator.colloseum.trading.TradingEngine
 
 class Colloseum {
 	
