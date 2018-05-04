@@ -41,7 +41,7 @@ class OpenPositionBFXTest {
 
 			(1 ..< 100).forEach[index|
 				val profit = getProfit(100+index)
-				add(new Trade(new Point(now(), 100+index), 100), 0)
+				add(new Trade(new Point(now(), 100+index), -100), 0)
 				assertTrue(getEntryPrice().doubleValue() > 100d)
 				assertEquals(profit, getProfit(100+index))
 			]

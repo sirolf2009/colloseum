@@ -15,6 +15,9 @@ import com.sirolf2009.commonwealth.trading.orderbook.LimitOrder
 	}
 	
 	new(Date timestamp, ILimitOrder ask, ILimitOrder bid) {
+		if(ask.getPrice().doubleValue() < bid.getPrice().doubleValue()) {
+			throw new IllegalArgumentException("Ask may not be less than bid")
+		}
 		this.timestamp = timestamp
 		this.ask = ask
 		this.bid = bid
