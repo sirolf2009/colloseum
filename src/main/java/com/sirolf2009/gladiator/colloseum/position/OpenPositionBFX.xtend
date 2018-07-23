@@ -7,6 +7,7 @@ import com.sirolf2009.commonwealth.trading.Trade
 import com.sirolf2009.gladiator.colloseum.trading.ClosedPosition
 import org.eclipse.xtend.lib.annotations.Accessors
 import com.sirolf2009.commonwealth.timeseries.Point
+import java.math.BigDecimal
 
 @Accessors class OpenPositionBFX implements IOpenColloseumPosition {
 
@@ -17,7 +18,7 @@ import com.sirolf2009.commonwealth.timeseries.Point
 	var double maxDrawdown
 	var double fees
 	var double price
-	var double size
+	var BigDecimal size
 	var ITrade exit
 
 	new(ITrade entry, Number fee) {
@@ -25,11 +26,11 @@ import com.sirolf2009.commonwealth.timeseries.Point
 		positionType = if(entry.bought) PositionType.LONG else PositionType.SHORT
 //		fees += fee
 		price = entry.price.doubleValue()
-		size = entry.amount.doubleValue()
+		size = new BigDecimal(entry.amount.doubleValue())
 	}
 
 	override toString() {
-		return '''«if(isLong) "Bought" else "Sold"» «Math.abs(size)» at «price»'''
+		return '''«if(isLong) "Bought" else "Sold"» «Math.abs(size.doubleValue())» at «price»'''
 	}
 
 	override getEntry() {
@@ -39,12 +40,12 @@ import com.sirolf2009.commonwealth.timeseries.Point
 	override add(ITrade trade, Number fee) {
 //		fees += fee
 		val profit = getProfit(trade.price)
-		size += trade.amount
+		size = size.add(new BigDecimal(trade.amount.doubleValue()))
 		if(isLong == trade.bought) {
-			price = calculateEntry(positionType, size, profit, trade.price.doubleValue())
+			price = calculateEntry(positionType, size.doubleValue(), profit, trade.price.doubleValue())
 		} else {
-			if(size != 0d) {
-				price = calculateEntry(positionType, size, profit, trade.price.doubleValue())
+			if(size.compareTo(BigDecimal.ZERO) != 0) {
+				price = calculateEntry(positionType, size.doubleValue(), profit, trade.price.doubleValue())
 			} else {
 				exit = trade
 			}
