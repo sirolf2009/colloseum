@@ -61,8 +61,8 @@ class TradingEngine {
 		onNewAsk(date, ask)
 		onNewBid(date, bid)
 		position.ifPresent[
-			updateDrawdown(bid.price.doubleValue(), ask.price.doubleValue())
-			drawdown = it.maxDrawdown
+			update(bid.price.doubleValue(), ask.price.doubleValue())
+			drawdown = it.maxDrawdown.doubleValue
 		]
 		return events
 	}
@@ -182,7 +182,7 @@ class TradingEngine {
 	}
 	
 	override double getMaxDrawdown() {
-		return -summarize().drawdown.getMin().orElse(0)
+		return -summarize().maxDrawdown.getMin().orElse(0)
 	}
 	
 	override double getProfits() {

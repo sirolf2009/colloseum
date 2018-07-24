@@ -12,6 +12,7 @@ import org.eclipse.xtend.lib.annotations.Data
 	val Number entryFee
 	val ITrade exit
 	val Number exitFee
-	val double maxDrawdown
+	val Number maxDrawdown
+	val Number maxDrawup
 	
 }

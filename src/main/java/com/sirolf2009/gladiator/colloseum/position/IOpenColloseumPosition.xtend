@@ -6,25 +6,36 @@ import com.sirolf2009.gladiator.colloseum.trading.ClosedPosition
 
 interface IOpenColloseumPosition extends IOpenPosition {
 
-	def double getMaxDrawdown()
-
-	def void setMaxDrawdown(double drawdown)
+	def void setMaxDrawdown(Number drawdown)
+	def void setMaxDrawup(Number drawup)
 
 	def void add(ITrade trade, Number fee)
 
 	def ClosedPosition close()
 
-	def updateDrawdown(double bid, double ask) {
+	def update(double bid, double ask) {
 		if(isLong()) {
-			updateDrawdown(getProfit(bid))
+			getProfit(bid) => [
+				updateDrawdown()
+				updateDrawup()
+			]
 		} else {
-			updateDrawdown(getProfit(ask))
+			getProfit(ask) => [
+				updateDrawdown()
+				updateDrawup()
+			]
 		}
 	}
 
 	def updateDrawdown(double newDrawdown) {
-		if(newDrawdown < 0 && newDrawdown < getMaxDrawdown()) {
+		if(newDrawdown < 0 && newDrawdown < getMaxDrawdown().doubleValue()) {
 			setMaxDrawdown(newDrawdown)
+		}
+	}
+
+	def updateDrawup(double newDrawup) {
+		if(newDrawup > 0 && newDrawup > getMaxDrawup().doubleValue()) {
+			setMaxDrawup(newDrawup)
 		}
 	}
 

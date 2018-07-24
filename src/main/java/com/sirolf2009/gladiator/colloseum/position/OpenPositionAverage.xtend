@@ -14,7 +14,8 @@ import org.eclipse.xtend.lib.annotations.ToString
 	
 	val TradeSummary entry
 	val PositionType positionType
-	@Accessors var double maxDrawdown
+	@Accessors var Number maxDrawdown
+	@Accessors var Number maxDrawup
 	var double fees
 	var Optional<TradeSummary> exit
 	
@@ -81,7 +82,7 @@ import org.eclipse.xtend.lib.annotations.ToString
 	}
 	
 	override close() {
-		return new ClosedPosition(positionType, entry as ITrade, fees/2, exit.get() as ITrade, fees/2, maxDrawdown)
+		return new ClosedPosition(positionType, entry as ITrade, fees/2, exit.get() as ITrade, fees/2, maxDrawdown, maxDrawup)
 	}
 	
 }

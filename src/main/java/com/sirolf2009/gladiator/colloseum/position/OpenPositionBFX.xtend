@@ -15,7 +15,8 @@ import java.math.BigDecimal
 
 	val IPoint point
 	val PositionType positionType
-	var double maxDrawdown
+	var Number maxDrawdown
+	var Number maxDrawup
 	var double fees
 	var double price
 	var BigDecimal size
@@ -77,7 +78,7 @@ import java.math.BigDecimal
 	}
 
 	override close() {
-		return new ClosedPosition(positionType, new Trade(new Point(point.x, price), -exit.amount.doubleValue()), fees / 2, exit, fees / 2, maxDrawdown)
+		return new ClosedPosition(positionType, new Trade(new Point(point.x, price), -exit.amount.doubleValue()), fees / 2, exit, fees / 2, maxDrawdown, maxDrawup)
 	}
 
 }

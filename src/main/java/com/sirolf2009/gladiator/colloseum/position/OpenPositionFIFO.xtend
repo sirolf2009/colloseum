@@ -17,7 +17,8 @@ import com.sirolf2009.commonwealth.trading.Trade
 	val Queue<ITrade> openTrades
 	val TradeSummary openingTrades
 	val PositionType positionType
-	var double maxDrawdown
+	var Number maxDrawdown
+	var Number maxDrawup
 	var Optional<TradeSummary> closingTrades
 	var double fees
 	var double price
@@ -75,7 +76,7 @@ import com.sirolf2009.commonwealth.trading.Trade
 	}
 
 	override close() {
-		return new ClosedPosition(positionType, openingTrades as ITrade, fees/2, closingTrades.get() as ITrade, fees/2, maxDrawdown)
+		return new ClosedPosition(positionType, openingTrades as ITrade, fees/2, closingTrades.get() as ITrade, fees/2, maxDrawdown, maxDrawup)
 	}
 
 }
