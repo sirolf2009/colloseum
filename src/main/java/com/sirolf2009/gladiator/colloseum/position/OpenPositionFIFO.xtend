@@ -32,6 +32,8 @@ import com.sirolf2009.commonwealth.trading.Trade
 		fees += fee
 		price = entry.price.doubleValue()
 		size = entry.amount.doubleValue()
+		setMaxDrawdown(0)
+		setMaxDrawup(0)
 	}
 	
 	override toString() {

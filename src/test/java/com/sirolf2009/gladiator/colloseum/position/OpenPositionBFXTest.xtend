@@ -21,8 +21,8 @@ class OpenPositionBFXTest {
 	@Test
 	def void addEntryLong() {
 		new OpenPositionBFX(new Trade(new Point(now(), 100), 100), 0) => [
-			assertEquals(100d, getSize())
-			assertEquals(100d, getEntryPrice())
+			assertEquals(100d, getSize().doubleValue())
+			assertEquals(100d, getEntryPrice().doubleValue())
 
 			(1 ..< 100).forEach[index|
 				val profit = getProfit(100-index)
@@ -36,8 +36,8 @@ class OpenPositionBFXTest {
 	@Test
 	def void addEntryShort() {
 		new OpenPositionBFX(new Trade(new Point(now(), 100), -100), 0) => [
-			assertEquals(-100d, getSize())
-			assertEquals(100d, getEntryPrice())
+			assertEquals(-100d, getSize().doubleValue())
+			assertEquals(100d, getEntryPrice().doubleValue())
 
 			(1 ..< 100).forEach[index|
 				val profit = getProfit(100+index)

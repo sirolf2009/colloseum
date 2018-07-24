@@ -28,6 +28,8 @@ import java.math.BigDecimal
 //		fees += fee
 		price = entry.price.doubleValue()
 		size = new BigDecimal(entry.amount.doubleValue())
+		setMaxDrawdown(0)
+		setMaxDrawup(0)
 	}
 
 	override toString() {

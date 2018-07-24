@@ -24,6 +24,8 @@ import org.eclipse.xtend.lib.annotations.ToString
 		positionType = if(entry.bought) PositionType.LONG else PositionType.SHORT
 		fees += fee
 		exit = Optional.empty()
+		setMaxDrawdown(0)
+		setMaxDrawup(0)
 	}
 	
 	override getProfit(Number currentPrice) {
