@@ -6,6 +6,7 @@ import com.sirolf2009.commonwealth.trading.Trade
 import com.sirolf2009.commonwealth.trading.orderbook.ILimitOrder
 import com.sirolf2009.commonwealth.trading.orderbook.LimitOrder
 import com.sirolf2009.gladiator.colloseum.data.IBidAsk
+import com.sirolf2009.gladiator.colloseum.position.IOpenColloseumPosition
 import com.sirolf2009.gladiator.colloseum.position.IOpenPositionFactory
 import com.sirolf2009.gladiator.colloseum.trading.event.EventOrderHit
 import com.sirolf2009.gladiator.colloseum.trading.event.EventPositionClosed
@@ -18,13 +19,12 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.ObjectOutputStream
 import java.util.ArrayList
-import java.util.Collections
 import java.util.Date
 import java.util.List
 import java.util.Optional
-import com.sirolf2009.gladiator.colloseum.position.IOpenColloseumPosition
+import org.eclipse.xtend.lib.annotations.Accessors
 
-@JMXBean
+@JMXBean @Accessors
 class TradingEngine {
 
 	val IFeeCalculator feeCalculator
@@ -132,15 +132,15 @@ class TradingEngine {
 	}
 
 	def getClosedPositions() {
-		return Collections.unmodifiableList(closedPositions)
+		return closedPositions
 	}
 
 	def getAskOrders() {
-		return Collections.unmodifiableList(askOrders)
+		return askOrders
 	}
 
 	def getBidOrders() {
-		return Collections.unmodifiableList(bidOrders)
+		return bidOrders
 	}
 	
 	// JMX methods
