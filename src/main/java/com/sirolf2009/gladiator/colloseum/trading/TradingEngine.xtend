@@ -42,7 +42,7 @@ class TradingEngine {
 	new(IFeeCalculator feeCalculator, IOpenPositionFactory positionFactory) {
 		this.feeCalculator = feeCalculator
 		this.positionFactory = positionFactory
-		registerAs("com.sirolf2009.gladiator.colloseum:type=TradingEngine")
+//		registerAs("com.sirolf2009.gladiator.colloseum:type=TradingEngine")
 	}
 
 	def onNewPrice(ITrade trade) {
