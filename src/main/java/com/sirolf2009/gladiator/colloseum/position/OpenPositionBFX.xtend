@@ -47,7 +47,7 @@ import java.math.BigDecimal
 		if(isLong == trade.bought) {
 			price = calculateEntry(positionType, size.doubleValue(), profit, trade.price.doubleValue())
 		} else {
-			if(size.compareTo(BigDecimal.ZERO) != 0) {
+			if(!isClosed()) {
 				price = calculateEntry(positionType, size.doubleValue(), profit, trade.price.doubleValue())
 			} else {
 				exit = trade
@@ -72,7 +72,7 @@ import java.math.BigDecimal
 	}
 
 	override isClosed() {
-		return getSize().doubleValue() == 0d
+		return getSize().doubleValue() <= 0.00001d && getSize().doubleValue() >= -0.00001d
 	}
 
 	override getPositionType() {

@@ -6,6 +6,6 @@ import org.eclipse.xtend.lib.annotations.Data
 
 @Data class ColloseumBacktestResult implements IBacktestResult {
 
-	val List<ClosedPosition> trades	
+	val List<ClosedPosition> trades
 	
 }

@@ -23,6 +23,8 @@ import java.util.Date
 import java.util.List
 import java.util.Optional
 import org.eclipse.xtend.lib.annotations.Accessors
+import com.sirolf2009.gladiator.colloseum.Tick
+import com.sirolf2009.gladiator.colloseum.data.BidAsk
 
 @JMXBean @Accessors
 class TradingEngine {
@@ -42,29 +44,28 @@ class TradingEngine {
 	new(IFeeCalculator feeCalculator, IOpenPositionFactory positionFactory) {
 		this.feeCalculator = feeCalculator
 		this.positionFactory = positionFactory
-//		registerAs("com.sirolf2009.gladiator.colloseum:type=TradingEngine")
 	}
 
 	def onNewPrice(ITrade trade) {
 		return onNewBidAsk(trade.point.date, new LimitOrder(trade.point.x, trade.price.doubleValue()), new LimitOrder(trade.point.x, trade.price.doubleValue()))
 	}
-	
-	def onNewBidAsk(IBidAsk bidAsk) {
-		onNewBidAsk(bidAsk.timestamp, bidAsk.bid, bidAsk.ask)
-	}
 
-	def synchronized onNewBidAsk(Date date, ILimitOrder bid, ILimitOrder ask) {
-		this.currentDate = date
-		this.ask = ask.price.doubleValue
-		this.bid = bid.price.doubleValue
+	def onNewBidAsk(Date date, ILimitOrder bid, ILimitOrder ask) {
+		return onNewBidAsk(new BidAsk(date, ask, bid))
+	}
+	
+	def synchronized onNewBidAsk(IBidAsk bidAsk) {
+		this.currentDate = bidAsk.getTimestamp()
+		this.ask = bidAsk.getAsk().price.doubleValue
+		this.bid = bidAsk.getBid().price.doubleValue
 		events = new ArrayList()
-		onNewAsk(date, ask)
-		onNewBid(date, bid)
+		onNewAsk(bidAsk.getTimestamp(), bidAsk.getAsk())
+		onNewBid(bidAsk.getTimestamp(), bidAsk.getBid())
 		position.ifPresent[
-			update(bid.price.doubleValue(), ask.price.doubleValue())
+			update(bidAsk.getBid().price.doubleValue(), bidAsk.getAsk().price.doubleValue())
 			drawdown = it.maxDrawdown.doubleValue
 		]
-		return events
+		return new Tick(events, bidAsk, position)
 	}
 
 	def private onNewAsk(Date date, ILimitOrder ask) {
