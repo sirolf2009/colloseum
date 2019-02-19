@@ -42,7 +42,7 @@ class TradingEngineTest {
 		engine.onNewPrice(new Trade(new Point(96, 0), 1)) => [
 			assertSize(2)
 			assertBoughtAt(97)
-			position => [
+			getPosition.get() => [
 				assertTrue(isLong())
 				assertFalse(isShort())
 				assertFalse(isClosed())
@@ -54,7 +54,7 @@ class TradingEngineTest {
 		engine.onNewPrice(new Trade(new Point(101, 0), 1)) => [
 			assertSize(2)
 			assertSoldAt(100)
-			position => [
+			getPosition.get() => [
 				assertTrue(isLong())
 				assertFalse(isShort())
 				assertFalse(isClosed())
@@ -65,7 +65,7 @@ class TradingEngineTest {
 		engine.onNewPrice(new Trade(new Point(103, 0), 1)) => [
 			assertSize(3)
 			assertSoldAt(102)
-			position => [
+			getPosition.get() => [
 				assertTrue(isLong())
 				assertFalse(isShort())
 				assertTrue(isClosed())

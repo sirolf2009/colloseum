@@ -5,10 +5,15 @@ import org.eclipse.xtend.lib.annotations.Accessors
 
 @Accessors class DoublePortfolio {
 	
+	/** The Trading engine, used to get latest bid/ask */
 	val TradingEngine engine
+	/** Your stake in a trade */
 	val double margin
+	/** How much of your portfolio needs to be available */
 	val double maintenanceMargin
+	/** Your balance of USD */
 	var double balanceUSD
+	/** The amount of shares you own (or whatever else you're trading) */
 	var double balanceShare
 	
 	new(TradingEngine engine, double margin, double maintenanceMargin, double balanceUSD, double balanceShare) {
