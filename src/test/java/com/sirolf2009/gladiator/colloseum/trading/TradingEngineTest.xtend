@@ -23,11 +23,9 @@ class TradingEngineTest {
 	def void testOrderPlacing() {
 		val engine = new TradingEngine(new PercentageFeeCalculator(0d, 0d), OpenPositionFIFO.FACTORY)
 		
-		engine.onNewPrice(new Trade(new Point(100, 0), 1)).assertEmpty()
+		engine.onNewPrice(new Trade(new Point(0, 100), 1)).assertEmpty()
 		engine.placeBidOrder(new LimitOrder(99, 1))
-		engine.onNewPrice(new Trade(new Point(100, 0), 1)).assertEmpty()
-		engine.onNewPrice(new Trade(new Point(101, 0), 1)).assertEmpty()
-		engine.onNewPrice(new Trade(new Point(98, 0), 1)) => [
+		engine.onNewPrice(new Trade(new Point(1, 98), 1)) => [
 			assertSize(2)
 			assertBoughtAt(99)
 			newPosition => [
@@ -39,7 +37,7 @@ class TradingEngineTest {
 		]
 		engine.bidOrders.assertEmpty()
 		engine.placeBidOrder(new LimitOrder(97, 1))
-		engine.onNewPrice(new Trade(new Point(96, 0), 1)) => [
+		engine.onNewPrice(new Trade(new Point(2, 96), 1)) => [
 			assertSize(2)
 			assertBoughtAt(97)
 			getPosition.get() => [
@@ -51,7 +49,7 @@ class TradingEngineTest {
 		]
 		
 		engine.placeAskOrder(new LimitOrder(100, -1))
-		engine.onNewPrice(new Trade(new Point(101, 0), 1)) => [
+		engine.onNewPrice(new Trade(new Point(3, 101), 1)) => [
 			assertSize(2)
 			assertSoldAt(100)
 			getPosition.get() => [
@@ -62,16 +60,11 @@ class TradingEngineTest {
 			]
 		]
 		engine.placeAskOrder(new LimitOrder(102, -1))
-		engine.onNewPrice(new Trade(new Point(103, 0), 1)) => [
+		engine.onNewPrice(new Trade(new Point(4, 103), 1)) => [
 			assertSize(3)
 			assertSoldAt(102)
-			getPosition.get() => [
-				assertTrue(isLong())
-				assertFalse(isShort())
-				assertTrue(isClosed())
-				assertEquals(0d, getSize())
-			]
-			closedPosition => [
+			assertFalse(getPosition().isPresent())
+			getClosedPosition() => [
 				assertTrue(entry.bought())
 				assertFalse(entry.sold())
 				assertEquals(entry.getPrice().intValue(), 98)
@@ -83,6 +76,41 @@ class TradingEngineTest {
 				assertTrue(isLong())
 				assertFalse(isShort())
 				assertEquals(2d, getSize())
+				
+				/*
+				 * Buy at 99, sell at 100, 1$ profit
+				 * Buy at 97, sell at 102, 5$ profit
+				 * Total profit: $6
+				 */
+				 assertEquals(6, getProfit(), 0.001d)
+			]
+		]
+	}
+	
+	@Test
+	def void testNoOrderHit() {
+		val engine = new TradingEngine(new PercentageFeeCalculator(0d, 0d), OpenPositionFIFO.FACTORY)
+		
+		engine.onNewPrice(new Trade(new Point(0, 100), 1)).assertEmpty()
+		engine.placeBidOrder(new LimitOrder(99, 1))
+		engine.onNewPrice(new Trade(new Point(1, 100), 1)).assertEmpty()
+		engine.onNewPrice(new Trade(new Point(2, 101), 1)).assertEmpty()
+	}
+	
+	@Test
+	def void testOrderHit() {
+		val engine = new TradingEngine(new PercentageFeeCalculator(0d, 0d), OpenPositionFIFO.FACTORY)
+		
+		engine.onNewPrice(new Trade(new Point(0, 100), 1)).assertEmpty()
+		engine.placeBidOrder(new LimitOrder(99, 1))
+		engine.onNewPrice(new Trade(new Point(0, 98), 1)) => [
+			assertSize(2)
+			assertBoughtAt(99)
+			newPosition => [
+				assertTrue(isLong())
+				assertFalse(isShort())
+				assertFalse(isClosed())
+				assertEquals(1d, getSize())
 			]
 		]
 	}
