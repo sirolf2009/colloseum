@@ -33,6 +33,7 @@ class TradingEngineTest {
 				assertFalse(isShort())
 				assertFalse(isClosed())
 				assertEquals(1d, getSize())
+				assertEquals(99d, getEntryPrice())
 			]
 		]
 		engine.bidOrders.assertEmpty()
@@ -45,6 +46,7 @@ class TradingEngineTest {
 				assertFalse(isShort())
 				assertFalse(isClosed())
 				assertEquals(2d, getSize())
+				assertEquals((99d+97d)/2, getEntryPrice())
 			]
 		]
 		
@@ -57,6 +59,7 @@ class TradingEngineTest {
 				assertFalse(isShort())
 				assertFalse(isClosed())
 				assertEquals(1d, getSize())
+				assertEquals(97d, getEntryPrice())
 			]
 		]
 		engine.placeAskOrder(new LimitOrder(102, -1))
