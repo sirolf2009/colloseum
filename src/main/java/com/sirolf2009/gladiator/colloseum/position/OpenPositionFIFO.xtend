@@ -68,6 +68,10 @@ import com.sirolf2009.commonwealth.trading.Trade
 	override getEntryFee() {
 		return openTrades.map[fees].reduce[a,b|a+b]
 	}
+	
+	override getEntryPrice() {
+		return price
+	}
 
 	override isClosed() {
 		return getSize().doubleValue() == 0d

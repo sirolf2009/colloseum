@@ -47,7 +47,7 @@ class TradingEngine {
 	}
 
 	def onNewPrice(ITrade trade) {
-		return onNewBidAsk(trade.point.date, new LimitOrder(trade.point.x, trade.price.doubleValue()), new LimitOrder(trade.point.x, trade.price.doubleValue()))
+		return onNewBidAsk(trade.point.date, new LimitOrder(trade.price.doubleValue(), 0), new LimitOrder(trade.price.doubleValue(), 0))
 	}
 
 	def onNewBidAsk(Date date, ILimitOrder bid, ILimitOrder ask) {
