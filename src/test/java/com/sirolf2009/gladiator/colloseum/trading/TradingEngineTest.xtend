@@ -20,6 +20,48 @@ import com.sirolf2009.gladiator.colloseum.position.IOpenColloseumPosition
 class TradingEngineTest {
 	
 	@Test
+	def void testMarketOrder() {
+		val engine = new TradingEngine(new PercentageFeeCalculator(0d, 0d), OpenPositionFIFO.FACTORY)
+		
+		engine.onNewPrice(new Trade(new Point(100, 0), 1)).assertEmpty()
+		engine.placeMarketBuyOrder(1) => [
+			assertSize(2)
+			assertBoughtAt(100)
+			newPosition => [
+				assertTrue(isLong())
+				assertFalse(isShort())
+				assertFalse(isClosed())
+				assertEquals(1d, getSize())
+			]
+		]
+		
+		engine.onNewPrice(new Trade(new Point(101, 0), 2)).assertEmpty()
+		engine.placeMarketSellOrder(-1) => [
+			assertSize(3)
+			assertSoldAt(101)
+			getPosition => [
+				assertTrue(isLong())
+				assertFalse(isShort())
+				assertTrue(isClosed())
+				assertEquals(0d, getSize())
+			]
+			closedPosition => [
+				assertTrue(entry.bought())
+				assertFalse(entry.sold())
+				assertEquals(entry.getPrice().intValue(), 100)
+				assertEquals(entry.getAmount().intValue(), 1)
+				assertTrue(exit.sold())
+				assertFalse(exit.bought())
+				assertEquals(exit.getPrice().intValue(), 101)
+				assertEquals(exit.getAmount().intValue(), -1)
+				assertTrue(isLong())
+				assertFalse(isShort())
+				assertEquals(1d, getSize())
+			]
+		]
+	}
+	
+	@Test
 	def void testOrderPlacing() {
 		val engine = new TradingEngine(new PercentageFeeCalculator(0d, 0d), OpenPositionFIFO.FACTORY)
 		

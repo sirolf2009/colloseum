@@ -83,6 +83,24 @@ class TradingEngine {
 		hitAskOrders.forEach[hitOrder(date, it)]
 		askOrders.removeAll(hitAskOrders)
 	}
+	
+	def synchronized placeMarketBuyOrder(Number amount) {
+		if(amount.doubleValue() < 0) {
+			throw new IllegalArgumentException("Can not buy a negative amount")
+		}
+		events = new ArrayList()
+		hitOrder(currentDate, new LimitOrder(ask, amount))
+		return events
+	}
+	
+	def synchronized placeMarketSellOrder(Number amount) {
+		if(amount.doubleValue() > 0) {
+			throw new IllegalArgumentException("Can not sell a positive amount")
+		}
+		events = new ArrayList()
+		hitOrder(currentDate, new LimitOrder(ask, amount))
+		return events
+	}
 
 	def private hitOrder(Date date, ILimitOrder order) {
 		events.add(new EventOrderHit(order))
