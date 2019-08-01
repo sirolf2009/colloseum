@@ -9,13 +9,29 @@ import org.eclipse.xtend.lib.annotations.Accessors
 	val TradingEngine engine
 	/** Your stake in a trade */
 	val double margin
-	/** How much of your portfolio needs to be available */
+	/** 
+	 * How much of your portfolio needs to be available
+	 * 
+	 * Let's say you open a long position of 13.333 shares @ 250$
+	 * Let's also say your balanceUSD is 1000 and your maintenanceMargin is 0.15 (15%)
+	 * The position was worth 13.333 * 250 = 3333.33$
+	 * 15% of 3333.33$ is 500$, which means you need to have more than 500$ left as collateral
+	 * If your position reaches a loss of 500, you'd only have 1000-500=500$ left as collateral
+	 * Because that reaches the maintenance threshold, you get liquidated
+	 */
 	val double maintenanceMargin
 	/** Your balance of USD */
 	var double balanceUSD
 	/** The amount of shares you own (or whatever else you're trading) */
 	var double balanceShare
 	
+	/**
+	 * @param engine - The TradingEngine, used to get latest bid/ask
+	 * @param margin - Your stake in a trade
+	 * @param maintenanceMargin - How much of your portfolio needs to be available
+	 * @param balanceUSD - Your balance of USD
+	 * @param balanceShare - The amount of shares you own (or whatever else you're trading)
+	 */
 	new(TradingEngine engine, double margin, double maintenanceMargin, double balanceUSD, double balanceShare) {
 		this.engine = engine
 		this.margin = margin
@@ -91,6 +107,10 @@ import org.eclipse.xtend.lib.annotations.Accessors
 	
 	def getMaxLeverage() {
 		1/margin
+	}
+	
+	def getIsLiquidated() {
+		return getUnusedMargin() <= 0
 	}
 	
 }

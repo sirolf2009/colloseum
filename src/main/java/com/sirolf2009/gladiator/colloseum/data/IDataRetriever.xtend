@@ -1,7 +1,9 @@
 package com.sirolf2009.gladiator.colloseum.data
 
+import java.util.stream.Stream
+
 interface IDataRetriever {
 	
-	def Iterable<? extends IBidAsk> getData()
+	def Stream<? extends IBidAsk> getData()
 	
 }

@@ -40,6 +40,7 @@ interface IOpenColloseumPosition extends IOpenPosition {
 	}
 
 	def boolean isClosed() {
+		println(getSize()+" == 0 ? "+getSize() == 0)
 		return getSize() == 0
 	}
 

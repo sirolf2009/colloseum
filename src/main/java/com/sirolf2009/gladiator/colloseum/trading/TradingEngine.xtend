@@ -53,7 +53,7 @@ class TradingEngine {
 	def onNewBidAsk(Date date, ILimitOrder bid, ILimitOrder ask) {
 		return onNewBidAsk(new BidAsk(date, ask, bid))
 	}
-	
+
 	def synchronized onNewBidAsk(IBidAsk bidAsk) {
 		this.currentDate = bidAsk.getTimestamp()
 		this.ask = bidAsk.getAsk().price.doubleValue
@@ -61,7 +61,7 @@ class TradingEngine {
 		events = new ArrayList()
 		onNewAsk(bidAsk.getTimestamp(), bidAsk.getAsk())
 		onNewBid(bidAsk.getTimestamp(), bidAsk.getBid())
-		position.ifPresent[
+		position.ifPresent [
 			update(bidAsk.getBid().price.doubleValue(), bidAsk.getAsk().price.doubleValue())
 			drawdown = it.maxDrawdown.doubleValue
 		]
@@ -83,7 +83,7 @@ class TradingEngine {
 		hitAskOrders.forEach[hitOrder(date, it)]
 		askOrders.removeAll(hitAskOrders)
 	}
-	
+
 	def synchronized placeMarketBuyOrder(Number amount) {
 		if(amount.doubleValue() < 0) {
 			throw new IllegalArgumentException("Can not buy a negative amount")
@@ -92,7 +92,7 @@ class TradingEngine {
 		hitOrder(currentDate, new LimitOrder(ask, amount))
 		return events
 	}
-	
+
 	def synchronized placeMarketSellOrder(Number amount) {
 		if(amount.doubleValue() > 0) {
 			throw new IllegalArgumentException("Can not sell a positive amount")
@@ -106,14 +106,32 @@ class TradingEngine {
 		events.add(new EventOrderHit(order))
 		val myTrade = new Trade(new Point(date.time, order.price), order.amount)
 		if(position.present) {
-			position.get().add(myTrade, feeCalculator.getFee(myTrade, false))
-			events.add(new EventPositionUpdate(position.get()))
-			if(position.get().closed) {
-				closePosition(order)
+			val positionSize = position.get().getSize().doubleValue()
+			if(position.get().isLong() && !myTrade.bought() && -myTrade.getAmount().doubleValue() > positionSize) {
+				closeAndOpenPosition(myTrade)
+			} else if(position.get().isShort() && myTrade.bought() && myTrade.getAmount().doubleValue() > -positionSize) {
+				closeAndOpenPosition(myTrade)
+			} else {
+				position.get().add(myTrade, feeCalculator.getFee(myTrade, false))
+				events.add(new EventPositionUpdate(position.get()))
+				if(position.get().closed) {
+					closePosition()
+				}
 			}
 		} else {
 			openPosition(myTrade)
 		}
+	}
+
+	def private closeAndOpenPosition(ITrade trade) {
+		val positionSize = position.get().getSize().doubleValue()
+		val closingTrade = new Trade(new Point(trade.getDate().time, trade.price), -positionSize)
+		position.get().add(closingTrade, feeCalculator.getFee(closingTrade, false))
+		events.add(new EventPositionUpdate(position.get()))
+		closePosition()
+
+		val remainderTrade = new Trade(new Point(trade.getDate().time, trade.getPrice()), trade.getAmount().doubleValue() + positionSize)
+		openPosition(remainderTrade)
 	}
 
 	def private openPosition(ITrade entry) {
@@ -121,7 +139,7 @@ class TradingEngine {
 		events.add(new EventPositionOpened(position.get()))
 	}
 
-	def private closePosition(ILimitOrder order) {
+	def private closePosition() {
 		val it = position.get()
 		closedPositions.add(close())
 		position = Optional.empty()
@@ -132,20 +150,28 @@ class TradingEngine {
 		askOrders.add(order)
 	}
 
+	def synchronized cancelAskOrder(ILimitOrder order) {
+		askOrders.remove(order)
+	}
+
 	def synchronized placeBidOrder(ILimitOrder order) {
 		bidOrders.add(order)
 	}
-	
+
+	def synchronized cancelBidOrder(ILimitOrder order) {
+		bidOrders.remove(order)
+	}
+
 	def summarize() {
 		return new ColloseumBacktestResult(closedPositions)
 	}
-	
+
 	def savePositionsTo(File file) {
 		val out = new ObjectOutputStream(new FileOutputStream(file))
 		out.writeObject(closedPositions)
 		out.close()
 	}
-	
+
 	def getPosition() {
 		return position
 	}
@@ -161,53 +187,52 @@ class TradingEngine {
 	def getBidOrders() {
 		return bidOrders
 	}
-	
+
 	// JMX methods
-	
 	override Date getCurrentTime() {
 		return currentDate
 	}
-	
+
 	override double getBid() {
 		return bid
 	}
-	
+
 	override double getAsk() {
 		return ask
 	}
-	
+
 	override double getAvgEntry() {
 		return position.map[entryPrice.doubleValue].orElse(null)
 	}
-	
+
 	override boolean isLong() {
 		return position.map[isLong].orElse(false)
 	}
-	
+
 	override boolean isShort() {
 		return position.map[isShort].orElse(false)
 	}
-	
+
 	override double getSize() {
 		return position.map[size.doubleValue].orElse(null)
 	}
-	
+
 	override double getProfit() {
 		return position.map[getProfit(bid, ask)].orElse(null)
 	}
-	
+
 	override double getBiggestTrade() {
 		return summarize().sizes.getMax().orElse(0)
 	}
-	
+
 	override double getMaxDrawdown() {
 		return -summarize().maxDrawdown.getMin().orElse(0)
 	}
-	
+
 	override double getProfits() {
 		return summarize().profits.sum()
 	}
-	
+
 	override double getDrawdown() {
 		return -drawdown
 	}
